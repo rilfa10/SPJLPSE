@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Kwitansi" ALTER COLUMN "tgl" DROP NOT NULL;
+
+-- AlterTable
+ALTER TABLE "Pegawai" ALTER COLUMN "nip" SET DATA TYPE VARCHAR(200);

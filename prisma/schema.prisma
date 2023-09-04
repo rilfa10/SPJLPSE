@@ -1,0 +1,133 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Jabatan {
+  id       Int       @id @default(autoincrement())
+  nama     String    @db.VarChar(255)
+  pegawais Pegawai[]
+}
+
+model Pegawai {
+  id               Int                @id @default(autoincrement())
+  nip              String             @db.VarChar(255)
+  nama             String             @db.VarChar(255)
+  alamat           String             @db.VarChar(255)
+  telp             String             @db.VarChar(30)
+  golongan         String             @db.VarChar(255)
+  jabatan          Jabatan            @relation(fields: [jabatanId], references: [id])
+  jabatanId        Int
+  users            User[]
+  sppds            Sppd[]
+  ketuaanggarans   KetuaAnggaran[]
+  pejabatpelaksana PejabatPelaksana[]
+  rincianbiaya     RincianBiaya[]
+  kwitansi         Kwitansi[]
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  username  String  @db.VarChar(255)
+  password  String  @db.VarChar(255)
+  email     String  @db.VarChar(255)
+  pegawai   Pegawai @relation(fields: [pegawaiId], references: [id])
+  pegawaiId Int
+}
+
+model Kwitansi {
+  id                 Int              @id @default(autoincrement())
+  tgl                DateTime         @db.Date
+  mataanggaran       String           @db.VarChar(255)
+  dibukui            String           @db.VarChar(255)
+  program            String           @db.VarChar(255)
+  kegiatan           String           @db.VarChar(255)
+  terimadari         String           @db.VarChar(255)
+  terbilang          String           @db.VarChar(255)
+  pembayaran         String           @db.Text()
+  terbilangrp        String           @db.VarChar(255)
+  dibayarpadatgl     DateTime         @db.Date
+  sppd               Sppd             @relation(fields: [sppdId], references: [id])
+  sppdId             Int
+  ketuaanggaran      KetuaAnggaran    @relation(fields: [ketuaanggaranId], references: [id])
+  ketuaanggaranId    Int
+  pejabatpelaksana   PejabatPelaksana @relation(fields: [pejabatpelaksanaId], references: [id])
+  pejabatpelaksanaId Int
+  pegawai            Pegawai          @relation(fields: [pegawaiId], references: [id])
+  pegawaiId          Int
+}
+
+model Sppd {
+  id           Int            @id @default(autoincrement())
+  no           String         @db.VarChar()
+  tglsppd      DateTime       @db.Date
+  file         String         @db.VarChar(255)
+  pegawai      Pegawai        @relation(fields: [pegawaiId], references: [id])
+  pegawaiId    Int
+  spjs         Spj[]
+  buktis       Bukti[]
+  rincianbiaya RincianBiaya[]
+  kwitansi     Kwitansi[]
+}
+
+model RincianBiaya {
+  id                 Int              @id @default(autoincrement())
+  tgl                DateTime         @db.Date
+  lamaperjalanan     String           @db.VarChar(255)
+  transportberangkat String           @db.VarChar(255)
+  transportpulang    String           @db.VarChar(255)
+  taxilocal          String           @db.VarChar(255)
+  taxiluar           String           @db.VarChar(255)
+  fasilitas          String           @db.VarChar(255)
+  sakuperhari        String           @db.VarChar(255)
+  totaldanaharian    String           @db.VarChar(255)
+  pegawai            Pegawai          @relation(fields: [pegawaiId], references: [id])
+  pegawaiId          Int
+  sppd               Sppd             @relation(fields: [sppdId], references: [id])
+  sppdId             Int
+  ketuaanggaran      KetuaAnggaran    @relation(fields: [ketuaanggaranId], references: [id])
+  ketuaanggaranId    Int
+  pejabatpelaksana   PejabatPelaksana @relation(fields: [pejabatpelaksanaId], references: [id])
+  pejabatpelaksanaId Int
+}
+
+model Spj {
+  id               Int            @id @default(autoincrement())
+  sppd             Sppd           @relation(fields: [sppdId], references: [id])
+  sppdId           Int
+  filekwitansi     String
+  filerincianbiaya String
+}
+
+model Bukti {
+  id                   Int    @id @default(autoincrement())
+  buktitransportasi    String @db.VarChar(255)
+  buktitransportpulang String @db.VarChar(255)
+  tfsaku               String @db.VarChar(255)
+  buktipesanhotel      String @db.VarChar(255)
+  sppd                 Sppd   @relation(fields: [sppdId], references: [id])
+  sppdId               Int
+}
+
+model KetuaAnggaran {
+  id           Int            @id @default(autoincrement())
+  pegawai      Pegawai        @relation(fields: [pegawaiId], references: [id])
+  pegawaiId    Int
+  rincianbiaya RincianBiaya[]
+  kwitansi     Kwitansi[]
+}
+
+model PejabatPelaksana {
+  id           Int            @id @default(autoincrement())
+  pegawai      Pegawai        @relation(fields: [pegawaiId], references: [id])
+  pegawaiId    Int
+  rincianbiaya RincianBiaya[]
+  kwitansi     Kwitansi[]
+}
